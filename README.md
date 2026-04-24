@@ -109,7 +109,7 @@ The whitepaper document is built with:
 
 ```
 .
-├── chainlink-whitepaper.html   # Interactive whitepaper (open in browser)
+├── vela-whitepaper.html   # Interactive whitepaper (open in browser)
 └── README.md                   # This file
 ```
 
