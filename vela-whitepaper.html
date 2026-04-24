@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELA — 白皮书 Whitepaper v0.1</title>
+<meta name="description" content="VELA: Borderless messaging and frictionless global payments powered by Web3 infrastructure. Whitepaper v0.1.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #06090f;
+    --bg-secondary: #0c1220;
+    --bg-card: rgba(15, 23, 42, 0.6);
+    --bg-card-hover: rgba(20, 30, 55, 0.8);
+    --border: rgba(99, 140, 255, 0.1);
+    --border-hover: rgba(99, 140, 255, 0.25);
+    --text-primary: #e8ecf4;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #638cff;
+    --accent-cyan: #22d3ee;
+    --accent-violet: #a78bfa;
+    --accent-gradient: linear-gradient(135deg, #638cff 0%, #22d3ee 50%, #a78bfa 100%);
+    --glow-blue: rgba(99, 140, 255, 0.15);
+    --warn-red: #f87171;
+    --warn-amber: #fbbf24;
+    --success-green: #34d399;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Mesh gradient bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 20%, rgba(99,140,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 80% at 90% 80%, rgba(34,211,238,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(167,139,250,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grid overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99,140,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,140,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(6,9,15,0.7);
+    border-bottom: 1px solid var(--border);
+    transition: padding 0.3s ease;
+  }
+
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-version {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+  }
+
+  /* Cover */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .cover-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: orbFloat 12s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .cover-orb--1 { width:500px;height:500px;background:radial-gradient(circle,rgba(99,140,255,0.2) 0%,transparent 70%);top:10%;left:-10%;animation-delay:0s; }
+  .cover-orb--2 { width:400px;height:400px;background:radial-gradient(circle,rgba(34,211,238,0.15) 0%,transparent 70%);bottom:10%;right:-5%;animation-delay:-4s; }
+  .cover-orb--3 { width:300px;height:300px;background:radial-gradient(circle,rgba(167,139,250,0.12) 0%,transparent 70%);top:40%;right:20%;animation-delay:-8s; }
+
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-20px) scale(1.05); }
+    66% { transform: translate(-20px,15px) scale(0.95); }
+  }
+
+  .cover-content { position: relative; z-index: 2; max-width: 900px; }
+
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 20px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    backdrop-filter: blur(10px);
+    background: rgba(15,23,42,0.5);
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+  .cover-badge-dot { width:6px;height:6px;border-radius:50%;background:var(--accent-cyan);box-shadow:0 0 10px var(--accent-cyan);animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  .cover-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(64px, 12vw, 120px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, #ffffff 0%, #638cff 40%, #22d3ee 70%, #ffffff 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s, shimmer 6s ease-in-out infinite 1.2s;
+  }
+  @keyframes shimmer { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+
+  .cover-tagline-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(18px,3vw,28px);
+    font-weight: 300;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  .cover-tagline-en {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(14px,2vw,18px);
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-bottom: 64px;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+
+  .cover-divider { width:60px;height:2px;background:var(--accent-gradient);margin:0 auto 32px;border-radius:2px;opacity:0;animation:fadeUp 0.8s ease forwards 0.8s; }
+  .cover-meta { font-size:12px;color:var(--text-muted);letter-spacing:0.1em;opacity:0;animation:fadeUp 0.8s ease forwards 0.9s; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+  .scroll-hint {
+    position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-muted);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;animation:scrollBounce 2.5s ease-in-out infinite;opacity:0.6;z-index:2;
+  }
+  .scroll-hint::after { content:'';width:1px;height:32px;background:linear-gradient(to bottom,var(--accent-blue),transparent); }
+  @keyframes scrollBounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(8px);} }
+
+  /* Stats bar */
+  .stats-bar {
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;margin:60px auto;max-width:920px;background:var(--border);border-radius:16px;overflow:hidden;position:relative;z-index:1;
+  }
+  .stat-item { background:var(--bg-card);padding:32px 24px;text-align:center;backdrop-filter:blur(10px);transition:background 0.3s ease; }
+  .stat-item:hover { background:var(--bg-card-hover); }
+  .stat-number { font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:8px; }
+  .stat-label { font-size:11px;color:var(--text-muted);letter-spacing:0.04em;line-height:1.4; }
+  .stat-source { font-size:9px;color:var(--text-muted);opacity:0.5;margin-top:4px; }
+
+  /* Content */
+  .content { max-width:920px;margin:0 auto;padding:40px 40px 120px;position:relative;z-index:1; }
+
+  /* Section */
+  .section { margin-bottom:88px;opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease; }
+  .section.visible { opacity:1;transform:translateY(0); }
+
+  .section-header {
+    display:flex;align-items:flex-start;gap:24px;margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid var(--border);position:relative;
+  }
+  .section-header::after { content:'';position:absolute;bottom:-1px;left:0;width:80px;height:2px;background:var(--accent-gradient);border-radius:2px; }
+
+  .section-num { font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.1em;flex-shrink:0;padding-top:6px; }
+  .section-titles { flex:1; }
+  .section-zh { font-family:'Noto Serif SC',serif;font-size:clamp(24px,3.5vw,32px);font-weight:600;color:var(--text-primary);line-height:1.3; }
+  .section-en { font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.8vw,15px);color:var(--text-muted);margin-top:6px;font-weight:400;letter-spacing:0.03em; }
+
+  /* Subsection */
+  .subsection { margin-bottom:44px; }
+  .subsection-header { margin-bottom:20px; }
+  .subsection-zh { font-family:'Noto Serif SC',serif;font-size:18px;font-weight:600;color:var(--text-primary); }
+  .subsection-en { font-size:12px;color:var(--text-muted);margin-top:4px;letter-spacing:0.03em; }
+
+  /* Paragraphs */
+  .bi-para { margin-bottom:28px; }
+  .para-zh { font-family:'Noto Serif SC',serif;font-size:16px;font-weight:300;color:var(--text-primary);line-height:2;margin-bottom:8px; }
+  .para-en { font-size:14px;color:var(--text-secondary);line-height:1.75;padding-left:20px;border-left:2px solid var(--border);position:relative; }
+  .para-en::before { content:'';position:absolute;left:-2px;top:0;width:2px;height:100%;background:var(--accent-gradient);opacity:0;transition:opacity 0.3s ease; }
+  .bi-para:hover .para-en::before { opacity:1; }
+
+  /* Lists */
+  .bi-list { list-style:none;margin-bottom:28px; }
+  .bi-list li { padding:18px 0 18px 28px;border-bottom:1px solid var(--border);position:relative;transition:background 0.3s ease; }
+  .bi-list li:hover { background:rgba(99,140,255,0.03); }
+  .bi-list li::before { content:'';position:absolute;left:0;top:26px;width:8px;height:8px;border-radius:50%;background:var(--accent-gradient);box-shadow:0 0 12px var(--glow-blue); }
+  .bi-list li:first-child { border-top:1px solid var(--border); }
+  .list-zh { font-family:'Noto Serif SC',serif;font-size:15px;font-weight:400;color:var(--text-primary);line-height:1.7; }
+  .list-en { font-size:13px;color:var(--text-secondary);margin-top:6px;line-height:1.6; }
+
+  /* Tables */
+  .table-wrap { overflow-x:auto;margin:28px 0;border-radius:12px;border:1px solid var(--border);backdrop-filter:blur(10px);background:var(--bg-card); }
+  table { width:100%;border-collapse:collapse;font-size:14px; }
+  thead tr { background:linear-gradient(135deg,rgba(99,140,255,0.15) 0%,rgba(34,211,238,0.1) 100%); }
+  thead th { padding:16px 20px;text-align:left;font-weight:600;font-size:12px;letter-spacing:0.06em;color:var(--accent-blue);text-transform:uppercase;border-bottom:1px solid var(--border); }
+  tbody tr { background:transparent;transition:background 0.3s ease; }
+  tbody tr:hover { background:rgba(99,140,255,0.05); }
+  tbody tr:nth-child(even) { background:rgba(15,23,42,0.3); }
+  tbody tr:nth-child(even):hover { background:rgba(99,140,255,0.05); }
+  td { padding:14px 20px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6; }
+  tbody tr:last-child td { border-bottom:none; }
+  td .cell-zh { font-family:'Noto Serif SC',serif;font-size:13px;color:var(--text-primary);font-weight:400; }
+  td .cell-en { font-size:11.5px;color:var(--text-muted);margin-top:3px; }
+  td .cell-zh.highlight { color:var(--accent-cyan);font-weight:600; }
+
+  /* Phase cards */
+  .phase-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin:28px 0; }
+  .phase-card {
+    background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:all 0.4s ease;backdrop-filter:blur(10px);
+  }
+  .phase-card::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-gradient); }
+  .phase-card:hover { border-color:var(--border-hover);background:var(--bg-card-hover);transform:translateY(-4px);box-shadow:0 20px 60px rgba(99,140,255,0.08); }
+  .phase-label { font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px; }
+  .phase-title-zh { font-family:'Noto Serif SC',serif;font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:4px; }
+  .phase-title-en { font-size:12px;color:var(--text-muted);margin-bottom:16px;letter-spacing:0.03em; }
+  .phase-desc-zh { font-family:'Noto Serif SC',serif;font-size:13px;font-weight:300;color:var(--text-secondary);line-height:1.9;margin-bottom:8px; }
+  .phase-desc-en { font-size:12px;color:var(--text-muted);line-height:1.7; }
+
+  /* Tech cards */
+  .tech-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin:28px 0; }
+  .tech-card { background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:all 0.4s ease;backdrop-filter:blur(10px); }
+  .tech-card:hover { border-color:var(--border-hover);background:var(--bg-card-hover);transform:translateY(-4px);box-shadow:0 16px 48px rgba(99,140,255,0.06); }
+  .tech-tag { display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;padding:4px 14px;border-radius:100px;margin-bottom:16px;background:linear-gradient(135deg,rgba(99,140,255,0.15),rgba(34,211,238,0.1));color:var(--accent-blue);border:1px solid rgba(99,140,255,0.2); }
+  .tech-name-zh { font-family:'Noto Serif SC',serif;font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:10px; }
+  .tech-desc-zh { font-family:'Noto Serif SC',serif;font-size:13px;font-weight:300;color:var(--text-secondary);line-height:1.9;margin-bottom:8px; }
+  .tech-desc-en { font-size:12px;color:var(--text-muted);line-height:1.7; }
+
+  /* Architecture diagram */
+  .arch-diagram {
+    background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:36px 32px;margin:32px 0;backdrop-filter:blur(10px);font-family:'Space Grotesk',monospace;
+  }
+  .arch-layer {
+    border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:8px;display:flex;align-items:center;gap:16px;transition:all 0.3s ease;
+  }
+  .arch-layer:last-child { margin-bottom:0; }
+  .arch-layer:hover { border-color:var(--border-hover);background:rgba(99,140,255,0.03); }
+  .arch-layer-name {
+    font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent-blue);min-width:90px;flex-shrink:0;
+  }
+  .arch-layer-items {
+    display:flex;flex-wrap:wrap;gap:8px;flex:1;
+  }
+  .arch-chip {
+    font-size:11px;padding:4px 12px;border-radius:6px;background:rgba(99,140,255,0.08);color:var(--text-secondary);border:1px solid var(--border);white-space:nowrap;
+  }
+  .arch-chip.primary { background:rgba(34,211,238,0.1);color:var(--accent-cyan);border-color:rgba(34,211,238,0.2); }
+  .arch-arrow {
+    text-align:center;color:var(--text-muted);font-size:16px;margin:4px 0;opacity:0.4;
+  }
+
+  /* Compliance tiers */
+  .tier-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:24px 0; }
+  .tier-card {
+    background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;backdrop-filter:blur(10px);transition:all 0.3s ease;
+  }
+  .tier-card:hover { border-color:var(--border-hover); }
+  .tier-badge {
+    display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;padding:3px 10px;border-radius:6px;margin-bottom:12px;
+  }
+  .tier-badge.t1 { background:rgba(52,211,153,0.15);color:var(--success-green);border:1px solid rgba(52,211,153,0.25); }
+  .tier-badge.t2 { background:rgba(251,191,36,0.15);color:var(--warn-amber);border:1px solid rgba(251,191,36,0.25); }
+  .tier-badge.t3 { background:rgba(248,113,113,0.15);color:var(--warn-red);border:1px solid rgba(248,113,113,0.25); }
+  .tier-title { font-family:'Noto Serif SC',serif;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:8px; }
+  .tier-desc { font-size:12px;color:var(--text-secondary);line-height:1.7; }
+
+  /* Risk items */
+  .risk-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px;margin:24px 0; }
+  .risk-item {
+    background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;backdrop-filter:blur(10px);display:flex;gap:16px;align-items:flex-start;transition:all 0.3s ease;
+  }
+  .risk-item:hover { border-color:var(--border-hover); }
+  .risk-icon { font-size:20px;flex-shrink:0;margin-top:2px; }
+  .risk-content { flex:1; }
+  .risk-title { font-family:'Noto Serif SC',serif;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px; }
+  .risk-desc { font-size:12px;color:var(--text-secondary);line-height:1.6; }
+  .risk-mitigation { font-size:11px;color:var(--accent-cyan);margin-top:6px;padding-top:6px;border-top:1px solid var(--border); }
+
+  /* Flow diagram */
+  .flow-wrap {
+    display:flex;align-items:center;gap:0;margin:24px 0;overflow-x:auto;padding:8px 0;
+  }
+  .flow-step {
+    background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;text-align:center;min-width:130px;flex-shrink:0;transition:all 0.3s ease;
+  }
+  .flow-step:hover { border-color:var(--border-hover);background:var(--bg-card-hover); }
+  .flow-step-label { font-size:10px;color:var(--accent-blue);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px; }
+  .flow-step-text { font-family:'Noto Serif SC',serif;font-size:12px;color:var(--text-primary);font-weight:400; }
+  .flow-arrow { color:var(--accent-blue);font-size:18px;flex-shrink:0;padding:0 6px;opacity:0.5; }
+
+  /* Vision block */
+  .vision-block {
+    background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:64px 56px;text-align:center;margin-top:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px);
+  }
+  .vision-block::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(99,140,255,0.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(34,211,238,0.06) 0%,transparent 60%);pointer-events:none; }
+  .vision-zh { font-family:'Noto Serif SC',serif;font-size:clamp(17px,2.5vw,22px);font-weight:300;color:var(--text-primary);line-height:2.2;margin-bottom:24px;position:relative; }
+  .vision-en { font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,2vw,17px);font-weight:400;color:var(--text-secondary);line-height:1.9;position:relative; }
+  .vision-cta { margin-top:40px;font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;letter-spacing:-0.01em; }
+
+  /* Footer */
+  .footer { text-align:center;padding:48px 40px;font-size:12px;color:var(--text-muted);letter-spacing:0.08em;border-top:1px solid var(--border);position:relative;z-index:1; }
+
+  /* Callout / note box */
+  .callout {
+    background:rgba(99,140,255,0.05);border:1px solid rgba(99,140,255,0.15);border-left:3px solid var(--accent-blue);border-radius:0 10px 10px 0;padding:16px 20px;margin:20px 0;
+  }
+  .callout.warn { background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.15);border-left-color:var(--warn-amber); }
+  .callout-title { font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:6px; }
+  .callout.warn .callout-title { color:var(--warn-amber); }
+  .callout-text { font-size:13px;color:var(--text-secondary);line-height:1.7; }
+
+  /* Responsive */
+  @media (max-width:768px) {
+    .nav { padding:16px 24px; }
+    .cover { padding:100px 24px 80px; }
+    .content { padding:32px 24px 80px; }
+    .vision-block { padding:40px 24px; }
+    .phase-grid,.tech-grid { grid-template-columns:1fr; }
+    .stats-bar { grid-template-columns:repeat(2,1fr); }
+    .section-header { flex-direction:column;gap:8px; }
+    .flow-wrap { flex-wrap:wrap; }
+    .risk-grid { grid-template-columns:1fr; }
+    .tier-grid { grid-template-columns:1fr; }
+    .arch-layer { flex-direction:column;gap:8px; }
+  }
+  @media (max-width:480px) { .stats-bar { grid-template-columns:1fr; } }
+
+  /* Staggered reveal */
+  .section .table-wrap,.section .tech-grid,.section .phase-grid,.section .bi-para,.section .bi-list,.section .arch-diagram,.section .tier-grid,.section .risk-grid,.section .flow-wrap,.section .callout {
+    opacity:0;transform:translateY(16px);transition:opacity 0.5s ease,transform 0.5s ease;
+  }
+  .section.visible .table-wrap,.section.visible .tech-grid,.section.visible .phase-grid,.section.visible .bi-para,.section.visible .bi-list,.section.visible .arch-diagram,.section.visible .tier-grid,.section.visible .risk-grid,.section.visible .flow-wrap,.section.visible .callout {
+    opacity:1;transform:translateY(0);
+  }
+  .section.visible .bi-para:nth-child(2) { transition-delay:0.1s; }
+  .section.visible .bi-para:nth-child(3) { transition-delay:0.2s; }
+  .section.visible .bi-para:nth-child(4) { transition-delay:0.3s; }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-logo">VELA</div>
+  <div class="nav-version">Whitepaper v0.1</div>
+</nav>
+
+<!-- ======================== COVER ======================== -->
+<section class="cover" id="cover">
+  <div class="cover-orb cover-orb--1"></div>
+  <div class="cover-orb cover-orb--2"></div>
+  <div class="cover-orb cover-orb--3"></div>
+  <div class="cover-content">
+    <div class="cover-badge"><span class="cover-badge-dot"></span>Web3 Infrastructure · 白皮书</div>
+    <div class="cover-title">VELA</div>
+    <div class="cover-tagline-zh">无国界通讯，无摩擦金融</div>
+    <div class="cover-tagline-en">Borderless Communication. Frictionless Finance.</div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">Draft v0.1 &nbsp;·&nbsp; 草稿 v0.1 &nbsp;·&nbsp; For Discussion Purposes Only</div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- ======================== STATS ======================== -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-item">
+    <div class="stat-number">$905B</div>
+    <div class="stat-label">全球汇款市场 (2024)</div>
+    <div class="stat-source">World Bank</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">6.36%</div>
+    <div class="stat-label">全球平均汇款费率</div>
+    <div class="stat-source">World Bank RPW Q3 2025</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">< 1%</div>
+    <div class="stat-label">VELA 端到端费率</div>
+    <div class="stat-source">含法币出入金</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">< 30s</div>
+    <div class="stat-label">链上确认+到账</div>
+    <div class="stat-source">Base L2 / CCTP V2</div>
+  </div>
+</div>
+
+<main class="content">
+
+<!-- ======================== 01 SUMMARY ======================== -->
+<div class="section" id="s01">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div class="section-titles">
+      <div class="section-zh">概述</div>
+      <div class="section-en">Executive Summary</div>
+    </div>
+  </div>
+  <div class="bi-para">
+    <div class="para-zh">2024年全球个人跨境汇款市场规模达9050亿美元（世界银行），但全球平均汇款费率仍高达6.36%。银行渠道更是高达14.99%。无论是硅谷工程师汇款给上海的家人，还是伦敦设计师收取东京客户的款项——用户普遍面临高费率、长等待、复杂流程。</div>
+    <div class="para-en">Global personal remittance flows reached $905 billion in 2024 (World Bank), yet the global average cost remains 6.36%. Bank channels average 14.99%. Whether an engineer in Silicon Valley sending money to family in Shanghai, or a designer in London receiving payment from a Tokyo client — users face high fees, long waits, and cumbersome processes.</div>
+  </div>
+  <div class="bi-para">
+    <div class="para-zh">VELA 是一款内置全球支付能力的即时通讯平台。底层由成熟的 Web3 协议驱动：Base L2 提供低成本结算层，ERC-4337 账户抽象隐藏 Gas 费，Signal Protocol 保障端到端消息加密，Circle CCTP V2 实现原生 USDC 跨链转移。用户体验如日常聊天般自然——区块链对终端用户完全不可见。</div>
+    <div class="para-en">VELA is a messaging platform with built-in global payment capabilities. Powered by production-ready Web3 protocols: Base L2 for low-cost settlement, ERC-4337 Account Abstraction to hide gas fees, Signal Protocol for E2E message encryption, and Circle CCTP V2 for native USDC cross-chain transfer. The user experience feels as natural as everyday messaging — blockchain is entirely invisible to end users.</div>
+  </div>
+</div>
+
+<!-- ======================== 02 PROBLEM ======================== -->
+<div class="section" id="s02">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div class="section-titles">
+      <div class="section-zh">问题所在</div>
+      <div class="section-en">The Problem</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">一个全球性的痛点</div>
+      <div class="subsection-en">A Global Pain Point</div>
+    </div>
+    <div class="bi-para">
+      <div class="para-zh">一位硅谷工程师向上海家人汇$1,000——银行收取5%手续费+汇率差价，3个工作日到账，实际到手约$930。一位迪拜创业者给拉各斯合伙人转账——经过三家代理银行层层中转。一位菲律宾护士从新加坡汇钱回国——花6%的手续费给中介机构。据世界银行数据，Sub-Saharan Africa 是费率最高的接收地区（8.78%），而 SDG 目标是将全球平均降至3%以下——目前仍远未达成。</div>
+      <div class="para-en">An engineer in Silicon Valley sends $1,000 to family in Shanghai — the bank takes 5% plus FX spread, arriving in 3 business days; family receives ~$930. An entrepreneur in Dubai wires funds to a partner in Lagos — routed through three correspondent banks. A Filipino nurse in Singapore sends money home — paying 6% to intermediaries. Per World Bank data, Sub-Saharan Africa is the most expensive receiving region (8.78%), while the SDG target of 3% average cost remains far from achieved.</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">现有方案的根本缺陷</div>
+      <div class="subsection-en">Fundamental Flaws in Existing Solutions</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>方案 / Solution</th><th>费率 / Fee</th><th>速度 / Speed</th><th>覆盖 / Coverage</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="cell-zh">SWIFT 银行电汇</div><div class="cell-en">SWIFT Bank Wire</div></td>
+            <td><div class="cell-zh">3–15%</div><div class="cell-en">Avg. 14.99% (banks)</div></td>
+            <td><div class="cell-zh">2–5天</div><div class="cell-en">2–5 days</div></td>
+            <td><div class="cell-zh">广泛但缓慢</div><div class="cell-en">Wide but slow</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh">Western Union / Wise</div></td>
+            <td><div class="cell-zh">1–6%</div><div class="cell-en">MTO avg. 4.72%</div></td>
+            <td><div class="cell-zh">即时–2天</div><div class="cell-en">Instant–2 days</div></td>
+            <td><div class="cell-zh">受监管区域限制</div><div class="cell-en">Regulatory limits</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh">微信支付 / 支付宝</div><div class="cell-en">WeChat Pay / Alipay</div></td>
+            <td><div class="cell-zh">低</div><div class="cell-en">Low</div></td>
+            <td><div class="cell-zh">即时</div><div class="cell-en">Instant</div></td>
+            <td><div class="cell-zh">仅限中国生态</div><div class="cell-en">China only</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh">PayPal / Venmo</div></td>
+            <td><div class="cell-zh">2–5%</div></td>
+            <td><div class="cell-zh">即时–1天</div><div class="cell-en">Instant–1 day</div></td>
+            <td><div class="cell-zh">部分国家受限</div><div class="cell-en">Limited countries</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh highlight">VELA</div></td>
+            <td><div class="cell-zh highlight">&lt; 1% (端到端)</div></td>
+            <td><div class="cell-zh highlight">&lt; 30秒</div></td>
+            <td><div class="cell-zh highlight">合规市场全覆盖</div><div class="cell-en">All regulated markets</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <div class="callout-title">📊 Data Source</div>
+      <div class="callout-text">费率数据来源：World Bank Remittance Prices Worldwide (RPW) Q3 2025。VELA 端到端费率 &lt;1% 包含链上 Gas（&lt;$0.01/笔 on Base L2）+ 法币↔稳定币兑换成本（约 0.5–0.8%）。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== 03 SOLUTION ======================== -->
+<div class="section" id="s03">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div class="section-titles">
+      <div class="section-zh">解决方案</div>
+      <div class="section-en">The Solution</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">核心产品</div>
+      <div class="subsection-en">Core Product</div>
+    </div>
+    <ul class="bi-list">
+      <li>
+        <div class="list-zh">全球通讯 — 端到端加密聊天（Signal Protocol），永久消息记录，合规且隐私优先</div>
+        <div class="list-en">Global Messaging — E2E encrypted chat (Signal Protocol), persistent history, compliant yet privacy-first</div>
+      </li>
+      <li>
+        <div class="list-zh">无国界钱包 — 发送 USDC 至全球联系人，链上结算 &lt;30秒，端到端费率 &lt;1%</div>
+        <div class="list-en">Borderless Wallet — send USDC to any contact globally, on-chain settlement &lt;30s, end-to-end fee &lt;1%</div>
+      </li>
+      <li>
+        <div class="list-zh">开放金融平台 — 全球商户和金融机构通过开放 API 接入支付、结算、兑换服务</div>
+        <div class="list-en">Open Finance Platform — global merchants and financial institutions access payment, settlement, and exchange services via open APIs</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">核心洞察：注意力 → 金融流</div>
+      <div class="subsection-en">Core Insight: Attention → Financial Flows</div>
+    </div>
+    <div class="bi-para">
+      <div class="para-zh">微信证明了一个模式：用户注意力在哪里，金融流就跟到哪里。先用社交粘性留住用户日常习惯，再让支付成为自然延伸——最终构建万亿级闭环生态。VELA 将这一经过验证的模式从单一市场推向全球：先以顶级通讯体验抓住每日活跃注意力，再让跨境金融成为一次点击的事。Web3 是底层基础设施，不是面向用户的卖点。</div>
+      <div class="para-en">WeChat proved a model: financial flows follow user attention. First retain daily habits through social stickiness, then make payments a natural extension — ultimately building a trillion-dollar closed-loop ecosystem. VELA takes this validated model from a single market to the globe: capture daily active attention through world-class messaging, then make cross-border finance a one-tap action. Web3 is underlying infrastructure, not a user-facing selling point.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== 04 TECHNOLOGY ======================== -->
+<div class="section" id="s04">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <div class="section-titles">
+      <div class="section-zh">技术架构</div>
+      <div class="section-en">Technical Architecture</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">系统分层架构</div>
+      <div class="subsection-en">Layered System Architecture</div>
+    </div>
+
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-layer-name">Client</div>
+        <div class="arch-layer-items">
+          <span class="arch-chip">聊天 UI</span>
+          <span class="arch-chip">钱包 UI</span>
+          <span class="arch-chip">第三方 Mini-App</span>
+          <span class="arch-chip">KYC 流程</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↕</div>
+      <div class="arch-layer">
+        <div class="arch-layer-name">Protocol</div>
+        <div class="arch-layer-items">
+          <span class="arch-chip primary">Signal Protocol (E2E)</span>
+          <span class="arch-chip primary">ERC-4337 (Gas 抽象)</span>
+          <span class="arch-chip primary">Circle CCTP V2</span>
+          <span class="arch-chip">ZK Proofs (身份验证)</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↕</div>
+      <div class="arch-layer">
+        <div class="arch-layer-name">Infra</div>
+        <div class="arch-layer-items">
+          <span class="arch-chip">Base (Coinbase L2)</span>
+          <span class="arch-chip">USDC Native</span>
+          <span class="arch-chip">Bundler Node</span>
+          <span class="arch-chip">EntryPoint Contract</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↕</div>
+      <div class="arch-layer">
+        <div class="arch-layer-name">Compliance</div>
+        <div class="arch-layer-items">
+          <span class="arch-chip">KYC Provider</span>
+          <span class="arch-chip">AML Screening</span>
+          <span class="arch-chip">Travel Rule (Notabene)</span>
+          <span class="arch-chip">FATF R.16</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-tag">ERC-4337</div>
+      <div class="tech-name-zh">账户抽象 · Gas 费隐形化</div>
+      <div class="tech-desc-zh">用户点击"发送"→ 构建 UserOperation → Bundler 打包提交至 EntryPoint 合约 → Paymaster.validatePaymasterUserOp() 验证赞助资格 → 执行链上转账 → Paymaster.postOp() 完成扣费结算。用户全程零 ETH 持有。</div>
+      <div class="tech-desc-en">User taps "Send" → UserOperation constructed → Bundler submits to EntryPoint → Paymaster validates sponsorship → on-chain transfer executes → postOp() settles costs. User holds zero ETH throughout.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-tag">SIGNAL PROTOCOL</div>
+      <div class="tech-name-zh">Double Ratchet · 消息加密</div>
+      <div class="tech-desc-zh">采用 Signal Protocol 的 Double Ratchet 算法实现端到端加密。每条消息使用独立密钥——即使单条密钥泄露，也无法解密历史或未来消息（前向保密 + 妥协后修复）。服务器仅传递密文，无法读取内容。</div>
+      <div class="tech-desc-en">Signal Protocol's Double Ratchet for E2E encryption. Each message uses a unique key — even if one key is compromised, past and future messages remain secure (forward secrecy + post-compromise healing). Server relays ciphertext only.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-tag">ZERO KNOWLEDGE</div>
+      <div class="tech-name-zh">零知识证明 · 身份与权限验证</div>
+      <div class="tech-desc-zh">ZK Proofs 不用于加密消息（这是 Signal Protocol 的职责），而用于隐私验证场景：证明用户属于某群组、验证 KYC 等级、确认交易授权——无需向服务器暴露具体身份或个人数据。</div>
+      <div class="tech-desc-en">ZK Proofs are NOT used for message encryption (that's Signal Protocol's job), but for privacy-preserving verification: proving group membership, verifying KYC tier, confirming transaction authorization — without exposing identity or personal data to servers.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">⚡ Why Signal Protocol, Not ZK, for Messaging?</div>
+    <div class="callout-text">零知识证明是验证协议（证明一个声明为真，不暴露底层数据），而非加密协议。端对端消息加密需要密钥协商 + 双棘轮算法——这正是 Signal Protocol 的核心能力。两者互补：Signal 保护消息内容，ZK 保护用户身份。</div>
+  </div>
+
+  <div class="subsection" style="margin-top:36px">
+    <div class="subsection-header">
+      <div class="subsection-zh">转账流程 · 端到端</div>
+      <div class="subsection-en">Transfer Flow · End-to-End</div>
+    </div>
+    <div class="flow-wrap">
+      <div class="flow-step"><div class="flow-step-label">Step 1</div><div class="flow-step-text">用户点击发送<br>User Taps Send</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-step-label">Step 2</div><div class="flow-step-text">构建 UserOp<br>Build UserOp</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-step-label">Step 3</div><div class="flow-step-text">Bundler 打包<br>Bundler Packs</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-step-label">Step 4</div><div class="flow-step-text">Paymaster 赞助<br>Paymaster Sponsors</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-step-label">Step 5</div><div class="flow-step-text">链上确认<br>On-chain Confirm</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-step-label">Step 6</div><div class="flow-step-text">接收方到账<br>Recipient Receives</div></div>
+    </div>
+  </div>
+
+  <div class="subsection" style="margin-top:36px">
+    <div class="subsection-header">
+      <div class="subsection-zh">链选择与跨链</div>
+      <div class="subsection-en">Chain Selection & Cross-Chain</div>
+    </div>
+    <div class="bi-para">
+      <div class="para-zh"><strong>主链：Base (Coinbase L2)</strong> — Gas 费 &lt;$0.01/笔，与 Coinbase 生态深度集成，面向消费级应用优化。<strong>跨链：Circle CCTP V2</strong> — 原生 USDC 跨链采用 burn-and-mint 机制（非 lock-and-mint bridge），无需流动性池，无包装代币风险。CCTP V2 通过 off-chain attestation 将跨链时间从分钟级压缩到秒级。</div>
+      <div class="para-en"><strong>Primary: Base (Coinbase L2)</strong> — Gas &lt;$0.01/tx, deep Coinbase ecosystem integration, optimized for consumer apps. <strong>Cross-chain: Circle CCTP V2</strong> — native USDC cross-chain via burn-and-mint (not lock-and-mint bridge), no liquidity pools, no wrapped token risks. CCTP V2 uses off-chain attestation to compress cross-chain time from minutes to seconds.</div>
+    </div>
+    <div class="callout warn">
+      <div class="callout-title">⚠️ Why Not Build a New Chain?</div>
+      <div class="callout-text">VELA 刻意不造新链、不发新币。使用 Circle 发行的受监管稳定币 USDC + 成熟 L2 基础设施，将技术风险和合规风险降到最低。产品竞争力来自用户体验层，不来自基础设施层。</div>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:28px">
+    <table>
+      <thead><tr>
+        <th>层级 / Layer</th><th>技术 / Technology</th><th>选择理由 / Rationale</th><th>用户感知 / UX</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="cell-zh">结算层</div><div class="cell-en">Settlement</div></td>
+          <td><div class="cell-zh">Base L2</div></td>
+          <td><div class="cell-zh">Gas &lt;$0.01，Coinbase 合规背书</div></td>
+          <td><div class="cell-zh">无感知</div><div class="cell-en">Invisible</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">Gas 支付</div><div class="cell-en">Gas Abstraction</div></td>
+          <td><div class="cell-zh">ERC-4337 Paymaster</div></td>
+          <td><div class="cell-zh">用户零ETH持有</div></td>
+          <td><div class="cell-zh">完全免费</div><div class="cell-en">Free</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">消息隐私</div><div class="cell-en">Messaging</div></td>
+          <td><div class="cell-zh">Signal Protocol</div></td>
+          <td><div class="cell-zh">经过审计的工业标准</div></td>
+          <td><div class="cell-zh">E2E 加密</div><div class="cell-en">E2E Encrypted</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">身份验证</div><div class="cell-en">Identity</div></td>
+          <td><div class="cell-zh">ZK Proofs</div></td>
+          <td><div class="cell-zh">隐私保护验证</div></td>
+          <td><div class="cell-zh">无感验证</div><div class="cell-en">Seamless</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">跨链</div><div class="cell-en">Cross-chain</div></td>
+          <td><div class="cell-zh">Circle CCTP V2</div></td>
+          <td><div class="cell-zh">原生 burn-and-mint，无 bridge 风险</div></td>
+          <td><div class="cell-zh">秒级到账</div><div class="cell-en">&lt;30s</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">资产</div><div class="cell-en">Asset</div></td>
+          <td><div class="cell-zh">USDC (Circle)</div></td>
+          <td><div class="cell-zh">受监管、1:1 储备审计</div></td>
+          <td><div class="cell-zh">即发即收</div><div class="cell-en">Send & Receive</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ======================== 05 COMPLIANCE ======================== -->
+<div class="section" id="s05">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <div class="section-titles">
+      <div class="section-zh">合规与监管框架</div>
+      <div class="section-en">Compliance & Regulatory Framework</div>
+    </div>
+  </div>
+
+  <div class="bi-para">
+    <div class="para-zh">跨境支付的核心瓶颈不是技术，而是合规。VELA 从第一天起就将合规设计嵌入产品架构，而非事后补救。以下是分阶段的合规策略：</div>
+    <div class="para-en">The core bottleneck for cross-border payments is not technology, but compliance. VELA embeds compliance-by-design into product architecture from day one — not as an afterthought.</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">KYC / AML 分级体系</div>
+      <div class="subsection-en">Tiered KYC / AML Framework</div>
+    </div>
+    <div class="tier-grid">
+      <div class="tier-card">
+        <div class="tier-badge t1">TIER 1 · 基础</div>
+        <div class="tier-title">手机号 + 验证码注册</div>
+        <div class="tier-desc">
+          <strong>功能：</strong>聊天 + 小额转账（&lt;$200/天）<br>
+          <strong>验证：</strong>手机号 + 短信 OTP<br>
+          <strong>目的：</strong>降低注册门槛，快速获取用户
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-badge t2">TIER 2 · 标准</div>
+        <div class="tier-title">身份证件 + 活体检测</div>
+        <div class="tier-desc">
+          <strong>功能：</strong>常规转账（&lt;$5,000/天）<br>
+          <strong>验证：</strong>护照/身份证 + 人脸识别<br>
+          <strong>目的：</strong>满足 FATF Recommendation 16 Travel Rule
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-badge t3">TIER 3 · 增强</div>
+        <div class="tier-title">增强尽职调查 (EDD)</div>
+        <div class="tier-desc">
+          <strong>功能：</strong>企业账户 + 大额（&gt;$5,000/天）<br>
+          <strong>验证：</strong>资金来源证明 + 商业文件<br>
+          <strong>目的：</strong>符合机构级 AML 要求
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">全球监管合规路径</div>
+      <div class="subsection-en">Global Regulatory Compliance Path</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>市场 / Market</th><th>监管框架 / Framework</th><th>牌照要求 / License</th><th>稳定币规则 / Stablecoin Rules</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="cell-zh">🇪🇺 欧盟</div></td>
+            <td><div class="cell-zh">MiCA + TFR</div></td>
+            <td><div class="cell-zh">CASP 许可证</div><div class="cell-en">CASP License (passportable)</div></td>
+            <td><div class="cell-zh">仅支持合规 EMT</div><div class="cell-en">Compliant EMTs only</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh">🇺🇸 美国</div></td>
+            <td><div class="cell-zh">FinCEN + State MTL</div></td>
+            <td><div class="cell-zh">MSB 注册 + 各州 MTL</div><div class="cell-en">MSB + State Money Transmitter</div></td>
+            <td><div class="cell-zh">Circle USDC 已合规</div><div class="cell-en">Circle USDC compliant</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh">🇸🇬 新加坡</div></td>
+            <td><div class="cell-zh">MAS PSA</div></td>
+            <td><div class="cell-zh">Major PI 牌照</div><div class="cell-en">Major Payment Institution</div></td>
+            <td><div class="cell-zh">SG Stablecoin Framework</div></td>
+          </tr>
+          <tr>
+            <td><div class="cell-zh">🇦🇪 阿联酋</div></td>
+            <td><div class="cell-zh">VARA / ADGM</div></td>
+            <td><div class="cell-zh">VASP 许可证</div><div class="cell-en">VASP License</div></td>
+            <td><div class="cell-zh">支持受监管稳定币</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <div class="callout-title">🔒 Travel Rule 合规</div>
+      <div class="callout-text">所有转账自动附带发送方/接收方识别信息，通过 Notabene 或 Sygna Bridge 等合规消息传输协议与对手方 VASP 交换。EU TFR 要求零门槛——所有金额、所有转账均需合规。VELA 在协议层原生支持此规则。</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header">
+      <div class="subsection-zh">稳定币策略</div>
+      <div class="subsection-en">Stablecoin Strategy</div>
+    </div>
+    <div class="bi-para">
+      <div class="para-zh"><strong>VELA 不发行自有稳定币。</strong>仅支持 Circle 发行的 USDC——1:1 美元储备、月度审计、已获主要司法管辖区认可。避免 reserve 管理风险和额外的监管审批负担。法币出入金通过与各地持牌交易所/支付网关合作实现。</div>
+      <div class="para-en"><strong>VELA does not issue its own stablecoin.</strong> Only Circle-issued USDC is supported — 1:1 USD reserves, monthly audits, recognized in major jurisdictions. Avoids reserve management risk and additional regulatory burden. Fiat on/off-ramps through partnerships with locally licensed exchanges and payment gateways.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== 06 BUSINESS ======================== -->
+<div class="section" id="s06">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <div class="section-titles">
+      <div class="section-zh">商业模式</div>
+      <div class="section-en">Business Model</div>
+    </div>
+  </div>
+
+  <ul class="bi-list">
+    <li>
+      <div class="list-zh">广告收入（免费层）— 非侵入式品牌合作，收入覆盖 Paymaster 的 Gas deposit 成本</div>
+      <div class="list-en">Advertising (Free Tier) — non-intrusive brand partnerships; revenue funds Paymaster gas deposits</div>
+    </li>
+    <li>
+      <div class="list-zh">高级订阅 — $4.99/月，无广告 + 高级功能 + 优先客服，用户预存余额抵扣 Gas</div>
+      <div class="list-en">Premium Subscription — $4.99/mo, ad-free + advanced features + priority support, pre-loaded balance covers gas</div>
+    </li>
+    <li>
+      <div class="list-zh">平台抽佣 — 第三方交易收取 0.3–0.5%，远低于行业水平</div>
+      <div class="list-en">Platform Commission — 0.3–0.5% on third-party transactions, well below industry average</div>
+    </li>
+    <li>
+      <div class="list-zh">企业 API 接入 — 金融机构和商户支付 API 接入费，按调用量阶梯定价</div>
+      <div class="list-en">Enterprise API Access — financial institutions and merchants pay tiered API access fees</div>
+    </li>
+  </ul>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>收入来源 / Source</th><th>定价 / Pricing</th><th>年预估 (1M MAU)</th><th>说明 / Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="cell-zh">品牌广告</div><div class="cell-en">Brand Ads</div></td>
+          <td><div class="cell-zh">CPM $5–8</div></td>
+          <td><div class="cell-zh">$3–5M</div></td>
+          <td><div class="cell-zh">覆盖免费用户 Gas</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">Premium</div></td>
+          <td><div class="cell-zh">$4.99/月</div></td>
+          <td><div class="cell-zh">$6M</div></td>
+          <td><div class="cell-zh">假设10%转化</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">平台佣金</div><div class="cell-en">Commission</div></td>
+          <td><div class="cell-zh">0.3%</div></td>
+          <td><div class="cell-zh">$1.5M</div></td>
+          <td><div class="cell-zh">$500M 年交易量</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">企业 API</div><div class="cell-en">Enterprise API</div></td>
+          <td><div class="cell-zh">$500–5K/月</div></td>
+          <td><div class="cell-zh">$2M</div></td>
+          <td><div class="cell-zh">50–100 客户</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bi-para">
+    <div class="para-zh">Gas 费没有消失——被重新分配了。免费用户用注意力（广告）支付，高级用户用订阅支付。这与 Google、Spotify、Telegram 运营逻辑一致，只是底层换成了 Web3 基础设施。<strong>不发行 Token、不搞 ICO</strong>——商业模式基于可验证的现金流，而非代币炒作。</div>
+    <div class="para-en">Gas fees don't disappear — they're redistributed. Free users pay with attention (ads), premium users with subscriptions. Same model as Google, Spotify, Telegram — just with Web3 infra underneath. <strong>No token issuance, no ICO</strong> — the business model is based on verifiable cash flows, not token speculation.</div>
+  </div>
+</div>
+
+<!-- ======================== 07 GTM ======================== -->
+<div class="section" id="s07">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <div class="section-titles">
+      <div class="section-zh">市场进入策略</div>
+      <div class="section-en">Go-To-Market Strategy</div>
+    </div>
+  </div>
+  <div class="phase-grid">
+    <div class="phase-card">
+      <div class="phase-label">Phase 1 · Year 1</div>
+      <div class="phase-title-zh">高频汇款走廊切入</div>
+      <div class="phase-title-en">High-Volume Corridors</div>
+      <div class="phase-desc-zh">瞄准全球最大汇款走廊：US↔墨西哥（$630亿/年）、中东↔南亚、东亚↔东南亚。这些走廊痛点最明确、用户付费意愿最强。先取得2-3个市场的 MTL/VASP 牌照。</div>
+      <div class="phase-desc-en">Target top corridors: US↔Mexico ($63B/yr), Middle East↔South Asia, East Asia↔SEA. Clearest pain, highest willingness to pay. Secure MTL/VASP licenses in 2-3 markets first.</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-label">Phase 2 · Year 2</div>
+      <div class="phase-title-zh">全球扩张与深度本地化</div>
+      <div class="phase-title-en">Global Expansion</div>
+      <div class="phase-desc-zh">扩展至欧洲（MiCA CASP）、非洲、更广亚太。深度本地化：语言、法币通道、合规。与持牌银行/交易所合作建立法币↔USDC 出入金。</div>
+      <div class="phase-desc-en">Expand to EU (MiCA CASP), Africa, broader APAC. Deep localization: language, fiat ramps, compliance. Partner with licensed banks/exchanges for fiat↔USDC on/off-ramps.</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-label">Phase 3 · Year 3+</div>
+      <div class="phase-title-zh">全球金融基础设施</div>
+      <div class="phase-title-en">Financial Infrastructure</div>
+      <div class="phase-desc-zh">开放第三方接入：跨境电商结算、供应链金融、自由职业者收付款。VELA 从应用层升级为基础设施层——做赋能者，不做竞争者。</div>
+      <div class="phase-desc-en">Open third-party access: cross-border e-commerce settlement, supply chain finance, freelancer payments. VELA evolves from app to infrastructure — enabler, not competitor.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== 08 COMPETITIVE ======================== -->
+<div class="section" id="s08">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <div class="section-titles">
+      <div class="section-zh">竞争优势</div>
+      <div class="section-en">Competitive Landscape</div>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>竞争对手 / Competitor</th><th>他们的缺口 / Gap</th><th>VELA 差异化 / Differentiation</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="cell-zh">微信支付 / 支付宝</div><div class="cell-en">WeChat Pay / Alipay</div></td>
+          <td><div class="cell-zh">仅限中国生态系统</div><div class="cell-en">China only</div></td>
+          <td><div class="cell-zh">全球无国界，无围墙花园</div><div class="cell-en">Global, no walled garden</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">Telegram / TON</div></td>
+          <td><div class="cell-zh">合规风险高，多国受限</div><div class="cell-en">High regulatory risk</div></td>
+          <td><div class="cell-zh">合规优先，持牌运营</div><div class="cell-en">Compliance-first, licensed</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">PayPal / Wise</div></td>
+          <td><div class="cell-zh">2-5%费率，速度慢</div><div class="cell-en">High fees, slow</div></td>
+          <td><div class="cell-zh">&lt;1%端到端，&lt;30秒</div><div class="cell-en">&lt;1% E2E, &lt;30s</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">Circle CPN</div><div class="cell-en">Circle Payments Network</div></td>
+          <td><div class="cell-zh">面向机构，非消费级</div><div class="cell-en">Institutional, not consumer</div></td>
+          <td><div class="cell-zh">消费级 UX + 社交粘性</div><div class="cell-en">Consumer UX + social</div></td>
+        </tr>
+        <tr>
+          <td><div class="cell-zh">SWIFT 网络</div><div class="cell-en">SWIFT Network</div></td>
+          <td><div class="cell-zh">慢、贵、多中介</div><div class="cell-en">Slow, expensive</div></td>
+          <td><div class="cell-zh">P2P 即时结算</div><div class="cell-en">P2P instant settlement</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ======================== 09 RISKS ======================== -->
+<div class="section" id="s09">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <div class="section-titles">
+      <div class="section-zh">风险与挑战</div>
+      <div class="section-en">Risks & Challenges</div>
+    </div>
+  </div>
+
+  <div class="bi-para">
+    <div class="para-zh">诚实地评估风险是构建可信项目的前提。以下是 VELA 面临的核心挑战及对应缓解策略：</div>
+    <div class="para-en">Honest risk assessment is a prerequisite for building a credible project. Below are VELA's core challenges and corresponding mitigation strategies:</div>
+  </div>
+
+  <div class="risk-grid">
+    <div class="risk-item">
+      <div class="risk-icon">⚖️</div>
+      <div class="risk-content">
+        <div class="risk-title">监管不确定性</div>
+        <div class="risk-desc">各国对稳定币、跨境支付的监管仍在快速演变。部分市场可能突然收紧或禁止。</div>
+        <div class="risk-mitigation">缓解：合规优先策略 + 多市场牌照 + 仅使用受监管稳定币 (USDC)</div>
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">🏦</div>
+      <div class="risk-content">
+        <div class="risk-title">法币出入金瓶颈</div>
+        <div class="risk-desc">用户最终需要将稳定币兑换为当地法币。出入金通道依赖合作方，是整个链路的最大瓶颈。</div>
+        <div class="risk-mitigation">缓解：与各地持牌交易所和支付网关建立多元合作伙伴网络，避免单点依赖</div>
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">🔐</div>
+      <div class="risk-content">
+        <div class="risk-title">智能合约安全</div>
+        <div class="risk-desc">ERC-4337 Paymaster 合约如被攻击，可能导致资金损失。合约安全是生命线。</div>
+        <div class="risk-mitigation">缓解：多轮审计 (OpenZeppelin / Trail of Bits) + 漏洞赏金计划 + 渐进式 deposit 上限</div>
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">📱</div>
+      <div class="risk-content">
+        <div class="risk-title">用户增长冷启动</div>
+        <div class="risk-desc">聊天应用依赖网络效应。没有用户 → 没有联系人 → 没有留存。冷启动是最难的阶段。</div>
+        <div class="risk-mitigation">缓解：从特定汇款走廊的社群切入（如海外劳工群体），先建立高密度本地网络再扩张</div>
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">⚡</div>
+      <div class="risk-content">
+        <div class="risk-title">竞争对手反应</div>
+        <div class="risk-desc">Circle CPN、WhatsApp Pay、Telegram TON 都在布局类似赛道。大公司可能快速复制功能。</div>
+        <div class="risk-mitigation">缓解：社交粘性 + 隐私优势构建护城河。用户不会因为功能相似而迁移社交关系链</div>
+      </div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-icon">🌐</div>
+      <div class="risk-content">
+        <div class="risk-title">跨链风险</div>
+        <div class="risk-desc">尽管 CCTP V2 比传统 bridge 安全，但跨链协议仍是攻击面之一。</div>
+        <div class="risk-mitigation">缓解：仅使用 Circle 官方 CCTP（非第三方 bridge）+ 转账金额分级限制 + 实时监控</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== 10 VISION ======================== -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <div class="section-titles">
+      <div class="section-zh">愿景</div>
+      <div class="section-en">Vision</div>
+    </div>
+  </div>
+  <div class="vision-block">
+    <div class="vision-zh">下一个使用 Web3 的十亿人，不会知道自己在使用 Web3。<br>他们会打开一个应用，给家人发消息，把资金送达世界另一端。<br>没有助记词，没有 Gas 费，没有国境线。</div>
+    <div class="vision-en" style="margin-top:28px">The next billion people to use Web3 will not know they are using Web3.<br>They will open an app, message their family, and send money across the world.<br>No seed phrases. No gas fees. No borders.</div>
+    <div class="vision-cta">VELA is that app.</div>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer">
+  Draft v0.1 &nbsp;·&nbsp; 草稿 v0.1 &nbsp;·&nbsp; For Discussion Purposes Only &nbsp;·&nbsp; © VELA
+</footer>
+
+<script>
+  // Scroll-reveal observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.06 });
+
+  document.querySelectorAll('.section').forEach(el => observer.observe(el));
+
+  // Stats bar reveal
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const statsBar = document.getElementById('statsBar');
+  if (statsBar) {
+    statsBar.style.opacity = '0';
+    statsBar.style.transform = 'translateY(20px)';
+    statsBar.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+    statsObserver.observe(statsBar);
+  }
+
+  // Navbar shrink
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('mainNav');
+    nav.style.padding = window.scrollY > 100 ? '12px 40px' : '20px 40px';
+  }, { passive: true });
+</script>
+
+</body>
+</html>
